@@ -6,6 +6,7 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import { 
   CalendarDays, 
   AlertTriangle, 
@@ -16,6 +17,7 @@ import {
 
 export default function DashboardPage() {
   const params = useParams();
+  const router = useRouter();
   const workspaceId = params.workspaceId as string;
   
   const [loading, setLoading] = useState(true);
@@ -42,8 +44,8 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
           <p className="text-slate-500">Welcome back, Owner.</p>
         </div>
-        <Button onClick={() => alert("This will open the Booking Page (Next Step!)")}>
-          View Public Booking Page
+        <Button onClick={() => router.push(`/book/${workspaceId}`)}>
+         View Public Booking Page
         </Button>
       </div>
 
