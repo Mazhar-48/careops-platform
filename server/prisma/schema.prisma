@@ -1,0 +1,73 @@
+// server/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id          String          @id @default(uuid())
+  name        String
+  email       String
+  timezone    String          @default("UTC")
+  createdAt   DateTime        @default(now())
+  users       User[]
+  contacts    Contact[]
+  bookings    Booking[]
+  inventory   InventoryItem[]
+}
+
+model User {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  role        String    // "ADMIN" or "STAFF"
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Contact {
+  id          String    @id @default(uuid())
+  name        String
+  email       String
+  phone       String?
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  bookings    Booking[]
+  messages    Message[]
+  createdAt   DateTime  @default(now())
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  status      String   @default("PENDING") // PENDING, CONFIRMED, COMPLETED, NO_SHOW
+  title       String   // e.g., "Dental Cleaning"
+  startTime   DateTime
+  endTime     DateTime
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model InventoryItem {
+  id          String    @id @default(uuid())
+  name        String
+  quantity    Int       @default(0)
+  threshold   Int       @default(5) // Alert when stock is below this
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Message {
+  id          String   @id @default(uuid())
+  content     String
+  direction   String   // "INBOUND" or "OUTBOUND"
+  channel     String   // "EMAIL" or "SMS"
+  contactId   String
+  contact     Contact  @relation(fields: [contactId], references: [id])
+  createdAt   DateTime @default(now())
+}
