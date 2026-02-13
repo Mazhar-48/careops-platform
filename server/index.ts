@@ -4,6 +4,12 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const app = express();
+// CORS CONFIGURATION
+app.use(cors({
+  origin: "*", // Allow ALL connections (Easiest for Hackathons)
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 const PORT = 4000;
 
 app.use(cors());
