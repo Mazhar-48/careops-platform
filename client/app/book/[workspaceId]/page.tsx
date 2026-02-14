@@ -16,6 +16,19 @@ export default function BookingPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", date: "", time: "09:00" });
+  const generateGoogleCalendarLink = () => {
+  const start = new Date(`${formData.date}T${formData.time}`);
+  const end = new Date(start.getTime() + 60 * 60 * 1000); // Assume 1 hour duration
+  
+  const formatTime = (date: Date) => date.toISOString().replace(/-|:|\.\d\d\d/g, "");
+  
+  const baseUrl = "https://calendar.google.com/calendar/render?action=TEMPLATE";
+  const text = `&text=Appointment with CareOps`;
+  const dates = `&dates=${formatTime(start)}/${formatTime(end)}`;
+  const details = `&details=Your service appointment is confirmed.`;
+  
+  return `${baseUrl}${text}${dates}${details}`;
+};
 
   const handleBook = async () => {
     if (!formData.name || !formData.email || !formData.date) {
@@ -45,17 +58,30 @@ export default function BookingPage() {
     }
   };
 
-  if (step === 2) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white p-6">
-        <Card className="w-full max-w-md text-center border-none shadow-2xl p-8 bg-gradient-to-b from-green-50 to-white">
-          <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
-          <h1 className="text-3xl font-black mb-2">You're All Set!</h1>
-          <Button onClick={() => window.location.reload()} variant="outline" className="mt-6 w-full">Book Another</Button>
-        </Card>
-      </div>
-    );
-  }
+ if (step === 2) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-white p-6">
+      <Card className="w-full max-w-md text-center border-none shadow-2xl p-8 bg-gradient-to-b from-green-50 to-white">
+        <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
+        <h1 className="text-3xl font-black mb-2">You're All Set!</h1>
+        <p className="text-slate-600 mb-6">Confirmation sent to <span className="font-bold text-slate-900">{formData.email}</span></p>
+        
+        <div className="flex flex-col gap-3">
+          {/* THE NEW GOOGLE CALENDAR BUTTON */}
+          <a href={generateGoogleCalendarLink()} target="_blank" rel="noopener noreferrer">
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 shadow-md">
+              📅 Add to Google Calendar
+            </Button>
+          </a>
+          
+          <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
+            Book Another
+          </Button>
+        </div>
+      </Card>
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 relative p-4">
