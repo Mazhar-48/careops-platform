@@ -168,6 +168,26 @@ app.post("/api/booking", async (req, res) => {
       workspaceId
     }
   });
+  // ==========================================
+// 🛠️ STAFF OPERATIONS: Update Booking Status
+// ==========================================
+app.put("/api/booking/:id/status", async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body; // e.g., "COMPLETED", "CANCELLED", "CONFIRMED"
+
+  try {
+    const updatedBooking = await prisma.booking.update({
+      where: { id: String(id) },
+      data: { status }
+    });
+    
+    console.log(`[STAFF ACTION] Booking ${id} status updated to ${status}`);
+    res.json(updatedBooking);
+  } catch (error) {
+    console.error("Failed to update status:", error);
+    res.status(500).json({ error: "Failed to update booking status" });
+  }
+});
 
   // TODO: Trigger Email Automation Here
   console.log(`[AUTOMATION] Sending Confirmation Email to Contact ${contactId}`);
